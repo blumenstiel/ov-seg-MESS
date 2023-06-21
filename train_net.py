@@ -53,6 +53,8 @@ from open_vocab_seg.evaluation import (
 from open_vocab_seg.utils.events import WandbWriter, setup_wandb
 from open_vocab_seg.utils.post_process_utils import dense_crf_post_process
 
+import mess.datasets
+from mess.evaluation.sem_seg_evaluation import MESSSemSegEvaluator
 
 class Trainer(DefaultTrainer):
     """
@@ -73,7 +75,8 @@ class Trainer(DefaultTrainer):
         evaluator_list = []
         evaluator_type = MetadataCatalog.get(dataset_name).evaluator_type
         if evaluator_type in ["sem_seg"]:
-            evaluator = GeneralizedSemSegEvaluator
+            # evaluator = GeneralizedSemSegEvaluator
+            evaluator = MESSSemSegEvaluator
             evaluator_list.append(
                 evaluator(
                     dataset_name,

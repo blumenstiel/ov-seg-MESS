@@ -1,3 +1,47 @@
+# Multi-domain Evaluation of Semantic Segmentation (MESS) with OVSeg
+
+[[Website (soon)](https://github.io)] [[arXiv (soon)](https://arxiv.org/)] [[GitHub](https://github.com/blumenstiel/MESS)]
+
+This directory contains the code for the MESS evaluation of OVSeg. Please see the commits for our changes of the model.
+
+## Setup
+Create a conda environment `ovseg` and install the required packages. See [mess/README.md]([mess/README.md]) for details.
+```sh
+ bash mess/setup_env.sh
+```
+
+Prepare the datasets by following the instructions in [mess/DATASETS.md](mess/DATASETS.md). The `ovseg` env can be used for the dataset preparation. If you evaluate multiple models with MESS, you can change the `dataset_dir` argument and the `DETECTRON2_DATASETS` environment variable to a common directory (see [mess/DATASETS.md](mess/DATASETS.md) and [mess/eval.sh](mess/eval.sh), e.g., `../mess_datasets`). 
+
+Download the OVSeg weights (see https://github.com/facebookresearch/ov-seg/blob/main/GETTING_STARTED.md)
+```sh
+mkdir weights
+conda activate ovseg
+# Python code for downloading the weights from GDrive. Link: https://drive.google.com/file/d/1cn-ohxgXDrDfkzC1QdO-fi8IjbjXmgKy/view
+python -c "import gdown; gdown.download(f'https://drive.google.com/uc?export=download&confirm=pbef&id=1cn-ohxgXDrDfkzC1QdO-fi8IjbjXmgKy', output='weights/ovseg_swinbase_vitL14_ft_mpt.pth')"
+```
+
+## Evaluation
+To evaluate the OVSeg model on the MESS dataset, run
+```sh
+bash mess/eval.sh
+
+# for evaluation in the background:
+nohup bash mess/eval.sh > eval.log &
+tail -f eval.log 
+```
+
+For evaluating a single dataset, select the DATASET from [mess/DATASETS.md](mess/DATASETS.md), the DETECTRON2_DATASETS path, and run
+```
+conda activate ovseg
+export DETECTRON2_DATASETS="datasets"
+DATASET=<dataset_name>
+
+# OVSeg large model
+python train_net.py --num-gpus 1 --eval-only --config-file configs/ovseg_swinB_vitL_bs32_120k.yaml MODEL.WEIGHTS weights/ovseg_swinbase_vitL14_ft_mpt.pth OUTPUT_DIR output/OVSeg/$DATASET DATASETS.TEST \(\"$DATASET\",\)
+```
+
+# --- Original OVSeg README.md ---
+
 # [OVSeg] Open-Vocabulary Semantic Segmentation with Mask-adapted CLIP
 
 <img src="resources/pytorch-logo-dark.png" width="10%">

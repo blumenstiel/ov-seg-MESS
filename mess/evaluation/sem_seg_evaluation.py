@@ -97,8 +97,10 @@ class MESSSemSegEvaluator(SemSegEvaluator):
             pred = np.array(output[:self._num_classes].argmax(dim=0).to(self._cpu_device), dtype=int)
 
             # get ground truth
-            gt_filename = self.input_file_to_gt_file[input["file_name"]]
-            gt = self.sem_seg_loading_fn(gt_filename, dtype=np.int)
+            with PathManager.open(
+                    self.input_file_to_gt_file[input["file_name"]], "rb"
+            ) as f:
+                gt = np.array(Image.open(f), dtype=int)
 
             gt[gt == self._ignore_label] = self._num_classes
 
